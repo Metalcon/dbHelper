@@ -3,12 +3,8 @@ package de.metalcon.dbhelper;
 import static org.fusesource.leveldbjni.JniDBFactory.asString;
 import static org.fusesource.leveldbjni.JniDBFactory.factory;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -170,24 +166,169 @@ public class LevelDbHandler {
 	 * @param value
 	 *            value to be associated with the specified key
 	 */
-	public void put(final byte[] key, final long[] value) {
-		db.put(key, Serialize(value));
+	public void put(final byte[] key, final String value) {
+		db.put(key, Serializer.Serialize(value));
 	}
 
-	public void put(final String key, final int value) { // String version
-		db.put(generateKey(key), Serialize(value));
+	public void put(final String key, final String value) { // String version
+		db.put(generateKey(key), Serializer.Serialize(value));
+	}
+
+	public void put(final long key, final String value) { // long version
+		db.put(generateKey(key), Serializer.Serialize(value));
+	}
+
+	public void put(final int key, final String value) { // int version
+		db.put(generateKey(key), Serializer.Serialize(value));
+	}
+
+	public void put(final short key, final String value) { // short version
+		db.put(generateKey(key), Serializer.Serialize(value));
+	}
+
+	/**
+	 * Associates the specified value with the specified key in the DB. If the
+	 * DB previously contained a mapping for the key, the old value is replaced.
+	 * 
+	 * @param key
+	 *            key with which the specified value is to be associated
+	 * @param value
+	 *            value to be associated with the specified key
+	 */
+	public void put(final byte[] key, final long value) {
+		db.put(key, Serializer.Serialize(value));
+	}
+
+	public void put(final String key, final long value) { // String version
+		db.put(generateKey(key), Serializer.Serialize(value));
 	}
 
 	public void put(final long key, final long value) { // long version
-		db.put(generateKey(key), Serialize(value));
+		db.put(generateKey(key), Serializer.Serialize(value));
 	}
 
 	public void put(final int key, final long value) { // int version
-		db.put(generateKey(key), Serialize(value));
+		db.put(generateKey(key), Serializer.Serialize(value));
 	}
 
 	public void put(final short key, final long value) { // short version
-		db.put(generateKey(key), Serialize(value));
+		db.put(generateKey(key), Serializer.Serialize(value));
+	}
+
+	/**
+	 * Associates the specified value with the specified key in the DB. If the
+	 * DB previously contained a mapping for the key, the old value is replaced.
+	 * 
+	 * @param key
+	 *            key with which the specified value is to be associated
+	 * @param value
+	 *            value to be associated with the specified key
+	 */
+	public void put(final byte[] key, final int value) {
+		db.put(key, Serializer.Serialize(value));
+	}
+
+	public void put(final String key, final int value) { // String version
+		db.put(generateKey(key), Serializer.Serialize(value));
+	}
+
+	public void put(final long key, final int value) { // long version
+		db.put(generateKey(key), Serializer.Serialize(value));
+	}
+
+	public void put(final int key, final int value) { // int version
+		db.put(generateKey(key), Serializer.Serialize(value));
+	}
+
+	public void put(final short key, final int value) { // short version
+		db.put(generateKey(key), Serializer.Serialize(value));
+	}
+
+	/**
+	 * Associates the specified value with the specified key in the DB. If the
+	 * DB previously contained a mapping for the key, the old value is replaced.
+	 * 
+	 * @param key
+	 *            key with which the specified value is to be associated
+	 * @param value
+	 *            value to be associated with the specified key
+	 */
+	public void put(final byte[] key, final short value) {
+		db.put(key, Serializer.Serialize(value));
+	}
+
+	public void put(final String key, final short value) { // String version
+		db.put(generateKey(key), Serializer.Serialize(value));
+	}
+
+	public void put(final long key, final short value) { // long version
+		db.put(generateKey(key), Serializer.Serialize(value));
+	}
+
+	public void put(final int key, final short value) { // int version
+		db.put(generateKey(key), Serializer.Serialize(value));
+	}
+
+	public void put(final short key, final short value) { // short version
+		db.put(generateKey(key), Serializer.Serialize(value));
+	}
+
+	/**
+	 * Associates the specified value with the specified key in the DB. If the
+	 * DB previously contained a mapping for the key, the old value is replaced.
+	 * 
+	 * @param key
+	 *            key with which the specified value is to be associated
+	 * @param value
+	 *            value to be associated with the specified key
+	 */
+	public void put(final byte[] key, final boolean value) {
+		db.put(key, Serializer.Serialize(value));
+	}
+
+	public void put(final String key, final boolean value) { // String version
+		db.put(generateKey(key), Serializer.Serialize(value));
+	}
+
+	public void put(final long key, final boolean value) { // long version
+		db.put(generateKey(key), Serializer.Serialize(value));
+	}
+
+	public void put(final int key, final boolean value) { // int version
+		db.put(generateKey(key), Serializer.Serialize(value));
+	}
+
+	public void put(final short key, final boolean value) { // short version
+		db.put(generateKey(key), Serializer.Serialize(value));
+	}
+
+	/**
+	 * Associates the specified value with the specified key in the DB. If the
+	 * DB previously contained a mapping for the key, the old value is replaced.
+	 * 
+	 * @param key
+	 *            key with which the specified value is to be associated
+	 * @param value
+	 *            value to be associated with the specified key
+	 */
+	public void put(final byte[] key, final long[] value) {
+		db.put(key, Serializer.Serialize(value));
+	}
+
+	public void put(final String key, final long[] value) {
+		put(generateKey(key), value);
+	}
+
+	public void put(final long key, final long[] value) {
+		put(generateKey(key), value);
+	}
+
+	public void put(final int key, final long[] value) {
+		put(generateKey(key), value);
+	}
+
+	public void put(final short key, final long[] value) {
+		put(generateKey(key), value);
 	}
 
 	/**
@@ -294,40 +435,154 @@ public class LevelDbHandler {
 	}
 
 	/**
-	 * Returns the integer to which the specified key is mapped, or
-	 * Integer.MIN_VALUE if the DB contains no mapping for the key.
+	 * Returns the value to which the specified key is mapped
 	 * 
 	 * @param key
 	 *            The key whose associated value is to be returned
-	 * @return The integer to which the specified key is mapped, or
-	 *         Integer.MIN_VALUE if the DB contains no mapping for the key.
+	 * @return The value to which the specified key is mapped
 	 */
-	public int getInt(final byte[] key) {
-		try {
-			byte[] bytes = db.get(key);
-			if (bytes == null) {
-				return Integer.MIN_VALUE;
-			}
-			return (int) DeSerialize(bytes);
-		} catch (final NumberFormatException e) {
-			return 0;
+	public long getLong(final byte[] key) throws ElementNotFoundException {
+		byte[] bytes = db.get(key);
+		if (bytes == null) {
+			throw new ElementNotFoundException(Arrays.toString(key));
 		}
+		return (int) Serializer.deserialize(bytes);
 	}
 
-	public int getInt(final long key) {
+	public long getLong(final long key) throws ElementNotFoundException {
 		return getInt(generateKey(key));
 	}
 
-	public int getInt(final String key) {
+	public long getLong(final String key) throws ElementNotFoundException {
 		return getInt(generateKey(key));
 	}
 
-	public int getInt(final int key) {
+	public long getLong(final int key) throws ElementNotFoundException {
 		return getInt(generateKey(key));
 	}
 
-	public int getInt(final short key) {
+	public long getLong(final short key) throws ElementNotFoundException {
 		return getInt(generateKey(key));
+	}
+
+	/**
+	 * Returns the value to which the specified key is mapped
+	 * 
+	 * @param key
+	 *            The key whose associated value is to be returned
+	 * @return The value to which the specified key is mapped
+	 */
+	public int getInt(final byte[] key) throws ElementNotFoundException {
+		byte[] bytes = db.get(key);
+		if (bytes == null) {
+			throw new ElementNotFoundException(Arrays.toString(key));
+		}
+		return (int) Serializer.deserialize(bytes);
+	}
+
+	public int getInt(final long key) throws ElementNotFoundException {
+		return getInt(generateKey(key));
+	}
+
+	public int getInt(final String key) throws ElementNotFoundException {
+		return getInt(generateKey(key));
+	}
+
+	public int getInt(final int key) throws ElementNotFoundException {
+		return getInt(generateKey(key));
+	}
+
+	public int getInt(final short key) throws ElementNotFoundException {
+		return getInt(generateKey(key));
+	}
+
+	/**
+	 * Returns the value to which the specified key is mapped
+	 * 
+	 * @param key
+	 *            The key whose associated value is to be returned
+	 * @return The value to which the specified key is mapped
+	 */
+	public short getShort(final byte[] key) throws ElementNotFoundException {
+		byte[] bytes = db.get(key);
+		if (bytes == null) {
+			throw new ElementNotFoundException(Arrays.toString(key));
+		}
+		return (short) Serializer.deserialize(bytes);
+	}
+
+	public short getShort(final long key) throws ElementNotFoundException {
+		return getShort(generateKey(key));
+	}
+
+	public short getShort(final String key) throws ElementNotFoundException {
+		return getShort(generateKey(key));
+	}
+
+	public short getShort(final int key) throws ElementNotFoundException {
+		return getShort(generateKey(key));
+	}
+
+	public short getShort(final short key) throws ElementNotFoundException {
+		return getShort(generateKey(key));
+	}
+
+	/**
+	 * Returns the value to which the specified key is mapped
+	 * 
+	 * @param key
+	 *            The key whose associated value is to be returned
+	 * @return The value to which the specified key is mapped
+	 */
+	public boolean getBoolean(final byte[] key) throws ElementNotFoundException {
+		byte[] bytes = db.get(key);
+		if (bytes == null) {
+			throw new ElementNotFoundException(Arrays.toString(key));
+		}
+		return (boolean) Serializer.deserialize(bytes);
+	}
+
+	public boolean getBoolean(final long key) throws ElementNotFoundException {
+		return getBoolean(generateKey(key));
+	}
+
+	public boolean getBoolean(final String key) throws ElementNotFoundException {
+		return getBoolean(generateKey(key));
+	}
+
+	public boolean getBoolean(final int key) throws ElementNotFoundException {
+		return getBoolean(generateKey(key));
+	}
+
+	public boolean getBoolean(final short key) throws ElementNotFoundException {
+		return getBoolean(generateKey(key));
+	}
+
+	/**
+	 * Returns the value to which the specified key is mapped
+	 * 
+	 * @param key
+	 *            The key whose associated value is to be returned
+	 * @return The value to which the specified key is mapped
+	 */
+	public String getString(final byte[] key) {
+		return (String) Serializer.deserialize(db.get(key));
+	}
+
+	public String getString(final long key) {
+		return getString(generateKey(key));
+	}
+
+	public String getString(final String key) {
+		return getString(generateKey(key));
+	}
+
+	public String getString(final int key) {
+		return getString(generateKey(key));
+	}
+
+	public String getString(final short key) {
+		return getString(generateKey(key));
 	}
 
 	/**
@@ -344,7 +599,7 @@ public class LevelDbHandler {
 		if (bytes == null) {
 			return null;
 		}
-		return (long[]) DeSerialize(bytes);
+		return (long[]) Serializer.deserialize(bytes);
 	}
 
 	public long[] getLongs(final String key) {
@@ -522,50 +777,6 @@ public class LevelDbHandler {
 		return key;
 	}
 
-	/**
-	 * Used to serialize any objects that should be stored in the DB
-	 * 
-	 * @param obj
-	 *            the object to be serialized
-	 * @return the serialized object
-	 */
-	private static byte[] Serialize(Object obj) {
-		byte[] out = null;
-		if (obj != null) {
-			try {
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				ObjectOutputStream oos = new ObjectOutputStream(baos);
-				oos.writeObject(obj);
-				out = baos.toByteArray();
-			} catch (IOException e) {
-				e.printStackTrace();
-				return null;
-			}
-		}
-		return out;
-	}
-
-	/**
-	 * Used to deserialize any object stored in the DB
-	 * 
-	 * @param obj
-	 *            the serialized object
-	 * @return the deserialized object
-	 */
-	private static Object DeSerialize(byte[] obj) {
-		Object out = null;
-		if (obj != null) {
-			try {
-				ByteArrayInputStream bios = new ByteArrayInputStream(obj);
-				ObjectInputStream ois = new ObjectInputStream(bios);
-				out = ois.readObject();
-			} catch (Exception e) {
-				throw new MetalconRuntimeException(e.getMessage());
-			}
-		}
-		return out;
-	}
-
 	@Override
 	public String toString() {
 		if (db == null) {
@@ -577,8 +788,8 @@ public class LevelDbHandler {
 			System.out.println(asString(iterator.peekNext().getKey()) + ":");
 			builder.append(asString(iterator.peekNext().getKey()) + ":");
 			builder.append("\t"
-					+ Arrays.toString((long[]) DeSerialize(iterator.peekNext()
-							.getValue())));
+					+ Arrays.toString((long[]) Serializer.deserialize(iterator
+							.peekNext().getValue())));
 		}
 		try {
 			iterator.close();
