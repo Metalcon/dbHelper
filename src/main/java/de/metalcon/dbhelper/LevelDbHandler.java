@@ -12,6 +12,7 @@ import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import org.fusesource.leveldbjni.JniDBFactory;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.DBIterator;
 import org.iq80.leveldb.Options;
@@ -131,7 +132,16 @@ public class LevelDbHandler {
 	 *            Any String which is used to identify this instance.
 	 */
 	public LevelDbHandler(final String keyPrefix) {
-		this(keyPrefix.hashCode() + 0xFFFFFFFFL * keyPrefix.hashCode());
+		this(keyPrefix.hashCode() + 0xFFFFFFFFL/* 4 Byte */
+				* keyPrefix.hashCode());
+		if (db == null) {
+			/*
+			 * Make sure that the developer does not forget to run initialize()
+			 */
+			throw new MetalconRuntimeException("You have to call "
+					+ LevelDbHandler.class.getName()
+					+ ".initialize() before calling this constructor");
+		}
 	}
 
 	/**
@@ -160,20 +170,23 @@ public class LevelDbHandler {
 	 * @param value
 	 *            value to be associated with the specified key
 	 */
-	public void put(final String key, final int value) {
+	public void put(final byte[] key, final long[] value) {
+		db.put(key, Serialize(value));
+	}
+
+	public void put(final String key, final int value) { // String version
 		db.put(generateKey(key), Serialize(value));
 	}
 
-	/**
-	 * Associates the specified value with the specified key in the DB. If the
-	 * DB previously contained a mapping for the key, the old value is replaced.
-	 * 
-	 * @param key
-	 *            key with which the specified value is to be associated
-	 * @param value
-	 *            value to be associated with the specified key
-	 */
-	public void put(final long key, final long value) {
+	public void put(final long key, final long value) { // long version
+		db.put(generateKey(key), Serialize(value));
+	}
+
+	public void put(final int key, final long value) { // int version
+		db.put(generateKey(key), Serialize(value));
+	}
+
+	public void put(final short key, final long value) { // short version
 		db.put(generateKey(key), Serialize(value));
 	}
 
@@ -210,10 +223,19 @@ public class LevelDbHandler {
 		put(key, valueArray);
 	}
 
-	/**
-	 * @see LevelDbHandler.setAdd(final byte[] key, final long value)
-	 */
-	public void addToSet(final long key, final long value) {
+	public void addToSet(final String key, final long value) { // String version
+		addToSet(generateKey(key), value);
+	}
+
+	public void addToSet(final long key, final long value) { // long version
+		addToSet(generateKey(key), value);
+	}
+
+	public void addToSet(final int key, final long value) { // int version
+		addToSet(generateKey(key), value);
+	}
+
+	public void addToSet(final short key, final long value) { // short version
 		addToSet(generateKey(key), value);
 	}
 
@@ -255,24 +277,20 @@ public class LevelDbHandler {
 		return true;
 	}
 
-	/**
-	 * @see LevelDbHandler.removeFromSet(final byte[] key, final long value)
-	 */
-	public boolean removeFromSet(long key, final long value) {
+	public boolean removeFromSet(final String key, final long value) { // String
 		return removeFromSet(generateKey(key), value);
 	}
 
-	/**
-	 * Associates the specified value with the specified key in the DB. If the
-	 * DB previously contained a mapping for the key, the old value is replaced.
-	 * 
-	 * @param key
-	 *            key with which the specified value is to be associated
-	 * @param value
-	 *            value to be associated with the specified key
-	 */
-	public void put(final byte[] key, final long[] value) {
-		db.put(key, Serialize(value));
+	public boolean removeFromSet(final long key, final long value) { // long
+		return removeFromSet(generateKey(key), value);
+	}
+
+	public boolean removeFromSet(final int key, final long value) { // int
+		return removeFromSet(generateKey(key), value);
+	}
+
+	public boolean removeFromSet(final short key, final long value) { // short
+		return removeFromSet(generateKey(key), value);
 	}
 
 	/**
@@ -284,9 +302,9 @@ public class LevelDbHandler {
 	 * @return The integer to which the specified key is mapped, or
 	 *         Integer.MIN_VALUE if the DB contains no mapping for the key.
 	 */
-	public int getInt(final String key) {
+	public int getInt(final byte[] key) {
 		try {
-			byte[] bytes = db.get(generateKey(key.hashCode()));
+			byte[] bytes = db.get(key);
 			if (bytes == null) {
 				return Integer.MIN_VALUE;
 			}
@@ -294,6 +312,22 @@ public class LevelDbHandler {
 		} catch (final NumberFormatException e) {
 			return 0;
 		}
+	}
+
+	public int getInt(final long key) {
+		return getInt(generateKey(key));
+	}
+
+	public int getInt(final String key) {
+		return getInt(generateKey(key));
+	}
+
+	public int getInt(final int key) {
+		return getInt(generateKey(key));
+	}
+
+	public int getInt(final short key) {
+		return getInt(generateKey(key));
 	}
 
 	/**
@@ -305,13 +339,6 @@ public class LevelDbHandler {
 	 * @return The long[] to which the specified key is mapped, or null if the
 	 *         DB contains no mapping for the key.
 	 */
-	public long[] getLongs(final long key) {
-		return getLongs(generateKey(key));
-	}
-
-	/**
-	 * @see LevelDbHandler.getLongs(final long key)
-	 */
 	public long[] getLongs(final byte[] key) {
 		byte[] bytes = db.get(key);
 		if (bytes == null) {
@@ -320,13 +347,41 @@ public class LevelDbHandler {
 		return (long[]) DeSerialize(bytes);
 	}
 
+	public long[] getLongs(final String key) {
+		return getLongs(generateKey(key));
+	}
+
+	public long[] getLongs(final long key) {
+		return getLongs(generateKey(key));
+	}
+
+	public long[] getLongs(final int key) {
+		return getLongs(generateKey(key));
+	}
+
+	public long[] getLongs(final short key) {
+		return getLongs(generateKey(key));
+	}
+
 	/**
 	 * Removes the mapping for a key from this DB if it is present
 	 * 
 	 * @param keyUUID
 	 *            The key to be removed
 	 */
+	public void removeKey(final String keyUUID) {
+		db.delete(generateKey(keyUUID));
+	}
+
 	public void removeKey(final long keyUUID) {
+		db.delete(generateKey(keyUUID));
+	}
+
+	public void removeKey(final int keyUUID) {
+		db.delete(generateKey(keyUUID));
+	}
+
+	public void removeKey(final short keyUUID) {
 		db.delete(generateKey(keyUUID));
 	}
 
@@ -336,7 +391,19 @@ public class LevelDbHandler {
 	 * @param keyUUID
 	 * @return
 	 */
+	public boolean containsKey(final String keyUUID) {
+		return db.get(generateKey(keyUUID)) != null;
+	}
+
 	public boolean containsKey(final long keyUUID) {
+		return db.get(generateKey(keyUUID)) != null;
+	}
+
+	public boolean containsKey(final int keyUUID) {
+		return db.get(generateKey(keyUUID)) != null;
+	}
+
+	public boolean containsKey(final short keyUUID) {
 		return db.get(generateKey(keyUUID)) != null;
 	}
 
@@ -345,19 +412,35 @@ public class LevelDbHandler {
 	 * 
 	 * FIXME: Sort the Set and use binary search
 	 * 
-	 * @param keyUUID
+	 * @param key
 	 * @return
 	 */
-	public boolean setContainsElement(final byte[] keyUUID, final long valueUUID) {
-		if (getLongs(keyUUID) == null) {
+	public boolean setContainsElement(final byte[] key, final long value) {
+		if (getLongs(key) == null) {
 			return false;
 		}
-		for (long l : getLongs(keyUUID)) {
-			if (l == valueUUID) {
+		for (long l : getLongs(key)) {
+			if (l == value) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	public boolean setContainsElement(final String key, final long value) {
+		return setContainsElement(generateKey(key), value);
+	}
+
+	public boolean setContainsElement(final long key, final long value) {
+		return setContainsElement(generateKey(key), value);
+	}
+
+	public boolean setContainsElement(final int key, final long value) {
+		return setContainsElement(generateKey(key), value);
+	}
+
+	public boolean setContainsElement(final short key, final long value) {
+		return setContainsElement(generateKey(key), value);
 	}
 
 	/**
@@ -369,7 +452,15 @@ public class LevelDbHandler {
 	 * @return the key identifying keySuffix within this instance
 	 */
 	public byte[] generateKey(final String keySuffix) {
-		return generateKey(keySuffix.hashCode());
+		if (keySuffix.length() == 0) {
+			return null;
+		}
+		byte[] suffix = JniDBFactory.bytes(keySuffix);
+		byte[] key = new byte[8 + keySuffix.length()];
+		System.arraycopy(keyPrefix, 0, key, 0, 8);
+		System.arraycopy(suffix, 0, key, 8, suffix.length);
+
+		return key;
 	}
 
 	/**
@@ -391,6 +482,42 @@ public class LevelDbHandler {
 		key[13] = (byte) (keySuffix >> 16);
 		key[14] = (byte) (keySuffix >> 8);
 		key[15] = (byte) (keySuffix);
+
+		return key;
+	}
+
+	/**
+	 * Generates a key identifying the given keySuffix within this instance
+	 * 
+	 * @param keySuffix
+	 *            the key that should be concatenated to the key identifying
+	 *            this instance
+	 * @return the key identifying keySuffix within this instance
+	 */
+	public byte[] generateKey(final int keySuffix) {
+		byte[] key = new byte[12];
+		System.arraycopy(keyPrefix, 0, key, 0, 8);
+		key[8] = (byte) (keySuffix >> 24);
+		key[9] = (byte) (keySuffix >> 16);
+		key[10] = (byte) (keySuffix >> 8);
+		key[11] = (byte) (keySuffix);
+
+		return key;
+	}
+
+	/**
+	 * Generates a key identifying the given keySuffix within this instance
+	 * 
+	 * @param keySuffix
+	 *            the key that should be concatenated to the key identifying
+	 *            this instance
+	 * @return the key identifying keySuffix within this instance
+	 */
+	public byte[] generateKey(final short keySuffix) {
+		byte[] key = new byte[10];
+		System.arraycopy(keyPrefix, 0, key, 0, 8);
+		key[8] = (byte) (keySuffix >> 8);
+		key[9] = (byte) (keySuffix);
 
 		return key;
 	}
